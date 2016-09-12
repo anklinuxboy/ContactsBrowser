@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">ContactBrowser</string>
     <string name="action_settings">Settings</string>
+
+    // Search String
+    <string name="search">search</string>
 </resources>
