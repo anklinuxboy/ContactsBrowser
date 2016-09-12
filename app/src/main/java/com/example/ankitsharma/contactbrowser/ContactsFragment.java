@@ -1,6 +1,7 @@
 package com.example.ankitsharma.contactbrowser;
 
 import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -14,6 +15,12 @@ import android.view.ViewGroup;
  * A placeholder fragment containing a simple view.
  */
 public class ContactsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private final String[] CONTACT_PROJECTION = {
+            ContactsContract.Contacts._ID,
+            ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.Contacts.HAS_PHONE_NUMBER
+    };
 
     public ContactsFragment() {
     }
