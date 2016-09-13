@@ -14,6 +14,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ import android.widget.ListView;
  */
 public class ContactsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private final String LOG_TAG = ContactsFragment.class.getSimpleName();
     /*
      * Declare global variables like adapter and list view
      */
@@ -95,25 +97,29 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
                 0);
 
         mContactsList.setAdapter(mCursorAdapter);
-
         getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
+        String sortOrder = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC";
         return new CursorLoader(
                 getActivity(),
                 ContactsContract.Contacts.CONTENT_URI,
                 CONTACT_PROJECTION,
                 null,
                 null,
-                null);
+                sortOrder);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        data.moveToFirst();
+        do {
+            Log.d(LOG_TAG, "Cursor name " + data.getString(CONTACT_NAME));
+        } while (data.moveToNext());
+
         mCursorAdapter.swapCursor(data);
     }
 
