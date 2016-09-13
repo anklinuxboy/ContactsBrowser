@@ -1,10 +1,12 @@
 package com.example.ankitsharma.contactbrowser;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PersistableBundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 /**
@@ -70,8 +73,7 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        // Setting cursor adapter for list view
-
+        // Check for permissions for Android 6.0, if granted, then display contacts
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
@@ -97,6 +99,21 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
                 0);
 
         mContactsList.setAdapter(mCursorAdapter);
+
+        mContactsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String number = "4567894512";
+                Log.d(LOG_TAG, "onClick");
+                //Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:"+number));
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null)
+                    startActivity(intent);
+            }
+        });
+
+        // Start the loader
         getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
@@ -115,10 +132,10 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        data.moveToFirst();
-        do {
-            Log.d(LOG_TAG, "Cursor name " + data.getString(CONTACT_NAME));
-        } while (data.moveToNext());
+//        data.moveToFirst();
+//        do {
+//            Log.d(LOG_TAG, "Cursor name " + data.getString(CONTACT_NAME));
+//        } while (data.moveToNext());
 
         mCursorAdapter.swapCursor(data);
     }
