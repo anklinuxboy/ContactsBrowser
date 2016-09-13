@@ -4,4 +4,7 @@
 
     // Search String
     <string name="search">search</string>
+
+    // Activity Title
+    <string name="contacts">Contacts</string>
 </resources>
