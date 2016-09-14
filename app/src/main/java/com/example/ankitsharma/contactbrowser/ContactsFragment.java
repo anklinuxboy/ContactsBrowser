@@ -121,12 +121,14 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String sortOrder = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC";
+        String selection = ContactsContract.Contacts.HAS_PHONE_NUMBER + " = ?";
+        String[] selectionArgs = new String[]{"1"};
         return new CursorLoader(
                 getActivity(),
                 ContactsContract.Contacts.CONTENT_URI,
                 CONTACT_PROJECTION,
-                null,
-                null,
+                selection,
+                selectionArgs,
                 sortOrder);
     }
 
