@@ -7,4 +7,7 @@
 
     // Activity Title
     <string name="contacts">Contacts</string>
+
+    // Search hint
+    <string name="hint">Search Contacts</string>
 </resources>

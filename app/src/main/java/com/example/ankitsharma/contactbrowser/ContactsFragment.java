@@ -1,12 +1,13 @@
 package com.example.ankitsharma.contactbrowser;
 
 import android.Manifest;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.PersistableBundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -16,9 +17,12 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -45,9 +49,12 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
 
     Uri mContactUri;
 
-    private final int LOADER_ID = 0;
+    private final int LOADER_ID_CONTACTS = 0;
+    private final int LOADER_ID_SEARCH = 1;
 
     private SimpleCursorAdapter mCursorAdapter;
+
+    private String nameSelectionString = "";
 
     private final String[] CONTACT_PROJECTION = {
             ContactsContract.Contacts._ID,
@@ -68,6 +75,36 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
     };
 
     public ContactsFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem searchMenuItem = menu.findItem(R.id.search);
+        SearchView searchView =
+                (SearchView) searchMenuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                nameSelectionString = query;
+                getLoaderManager().restartLoader(LOADER_ID_CONTACTS, null, ContactsFragment.this);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                nameSelectionString = newText;
+                getLoaderManager().restartLoader(LOADER_ID_CONTACTS, null, ContactsFragment.this);
+                Log.d(LOG_TAG, newText);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -114,15 +151,16 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
         });
 
         // Start the loader
-        getLoaderManager().initLoader(LOADER_ID, null, this);
+        getLoaderManager().initLoader(LOADER_ID_CONTACTS, null, this);
     }
 
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String sortOrder = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC";
-        String selection = ContactsContract.Contacts.HAS_PHONE_NUMBER + " = ?";
-        String[] selectionArgs = new String[]{"1"};
+        String selection = ContactsContract.Contacts.HAS_PHONE_NUMBER + " = ? AND " +
+                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?";
+        String[] selectionArgs = new String[]{"1", "%" + nameSelectionString + "%"};
         return new CursorLoader(
                 getActivity(),
                 ContactsContract.Contacts.CONTENT_URI,
