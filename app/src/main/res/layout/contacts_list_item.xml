@@ -24,7 +24,6 @@
         android:gravity="right"
         android:layout_marginRight="10dp"
         android:textSize="20sp"
-        android:text="658-698-8978"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"/>
 </LinearLayout>
