@@ -31,7 +31,7 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
 
     private final String LOG_TAG = ContactsFragment.class.getSimpleName();
 
-    // Marshmallow update
+    // Marshmallow Dangerous Permission Update
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     ListView contactsList;
     private final int LOADER_ID_CONTACTS = 0;
@@ -52,6 +52,11 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
     static final int CONTACT_NUMBER = 3;
 
     static final String CONTACT_COLUMN_NAME = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY;
+
+    private final String TYPE_HOME = "1";
+    private final String TYPE_MOBILE = "2";
+    private final String TYPE_WORK = "3";
+    private final String TYPE_WORK_MOBILE = "17";
 
     public ContactsFragment() {
     }
@@ -131,8 +136,13 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String sortOrder = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC";
-        String selection = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?";
-        String[] selectionArgs = new String[]{"%" + searchNameSelection + "%"};
+        String selection = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ? AND " +
+                ContactsContract.CommonDataKinds.Phone.TYPE + " IN(?,?,?,?)";
+        String[] selectionArgs = new String[]{"%" + searchNameSelection + "%",
+                                                TYPE_HOME,
+                                                TYPE_MOBILE,
+                                                TYPE_WORK,
+                                                TYPE_WORK_MOBILE};
 
         return new CursorLoader(
                 getActivity(),
@@ -156,10 +166,5 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         adapter.swapCursor(null);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 }

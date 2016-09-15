@@ -29,9 +29,6 @@ public class ContactsListAdapter extends CursorAdapter implements SectionIndexer
 
     public ContactsListAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
-
-
-
     }
 
     @Override
@@ -63,11 +60,11 @@ public class ContactsListAdapter extends CursorAdapter implements SectionIndexer
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         if (!cursor.isClosed()) {
-            //Log.d(LOG_TAG, cursor.getString(ContactsFragment.CONTACT_NAME));
             ViewHolder holder = (ViewHolder) view.getTag();
-            //Log.d(LOG_TAG, cursor.getString(ContactsFragment.CONTACT_NUMBER_TYPE));
-            holder.nameView.setText(cursor.getString(ContactsFragment.CONTACT_NAME));
-            holder.numberView.setText(cursor.getString(ContactsFragment.CONTACT_NUMBER));
+            String name = cursor.getString(ContactsFragment.CONTACT_NAME);
+            String number = cursor.getString(ContactsFragment.CONTACT_NUMBER);
+            holder.nameView.setText(name);
+            holder.numberView.setText(number);
         }
     }
 
