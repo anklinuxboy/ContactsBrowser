@@ -35,8 +35,9 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     ListView contactsList;
     private final int LOADER_ID_CONTACTS = 0;
-    private SimpleCursorAdapter adapter;
+    private ContactsListAdapter adapter;
     private String searchNameSelection = "";
+    private final int FLAGS = 0;
 
     private final String[] CONTACT_PROJECTION = {
             ContactsContract.Contacts._ID,
@@ -45,20 +46,12 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
             ContactsContract.CommonDataKinds.Phone.NUMBER
     };
 
-    private static final int CONTACT_ID = 0;
-    private static final int CONTACT_NAME = 1;
-    private static final int CONTACT_NUMBER_TYPE = 2;
-    private static final int CONTACT_NUMBER = 3;
+    static final int CONTACT_ID = 0;
+    static final int CONTACT_NAME = 1;
+    static final int CONTACT_NUMBER_TYPE = 2;
+    static final int CONTACT_NUMBER = 3;
 
-    private final String[] FROM_COLUMNS = {
-            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
-            ContactsContract.CommonDataKinds.Phone.NUMBER
-    };
-
-    private final static int[] TO_IDS = {
-            R.id.name,
-            R.id.number
-    };
+    static final String CONTACT_COLUMN_NAME = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY;
 
     public ContactsFragment() {
     }
@@ -116,15 +109,6 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
     public void showContacts() {
         contactsList = (ListView) getActivity().findViewById(R.id.list);
 
-        adapter = new SimpleCursorAdapter(
-                getActivity(),
-                R.layout.contacts_list_item,
-                null,
-                FROM_COLUMNS, TO_IDS,
-                0);
-
-        contactsList.setAdapter(adapter);
-
         contactsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -160,11 +144,24 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        adapter.swapCursor(data);
+        if (!data.isClosed()) {
+            adapter = new ContactsListAdapter(getContext(), data, FLAGS);
+            adapter.swapCursor(data);
+            contactsList.setAdapter(adapter);
+            //contactsList.setFastScrollEnabled(true);
+            //contactsList.setScrollingCacheEnabled(true);
+            //contactsList.setFastScrollAlwaysVisible(true);
+        }
+
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         adapter.swapCursor(null);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }
