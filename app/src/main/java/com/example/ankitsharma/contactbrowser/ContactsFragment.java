@@ -111,14 +111,18 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
+    /*
+     * Sets the Cursor Adapter to ListView and starts the loader manager
+     * Listens for clicks and opens the dialer
+     */
     public void showContacts() {
         contactsList = (ListView) getActivity().findViewById(R.id.list);
         adapter = new ContactsListAdapter(getContext(), null, FLAGS);
         contactsList.setAdapter(adapter);
+
         contactsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(LOG_TAG, "onClick");
                 Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
                 String number = cursor.getString(CONTACT_NUMBER);
                 Intent intent = new Intent(Intent.ACTION_DIAL);
@@ -128,7 +132,6 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
             }
         });
 
-        // Start the loader
         getLoaderManager().initLoader(LOADER_ID_CONTACTS, null, this);
     }
 

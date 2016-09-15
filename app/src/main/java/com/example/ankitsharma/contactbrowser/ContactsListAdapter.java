@@ -22,6 +22,7 @@ public class ContactsListAdapter extends CursorAdapter implements SectionIndexer
     AlphabetIndexer indexer;
     private final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+    // ViewHolder Class to optimize findViewById lookup
     public static class ViewHolder {
         TextView nameView;
         TextView numberView;
