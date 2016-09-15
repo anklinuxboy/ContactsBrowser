@@ -15,7 +15,7 @@ import android.widget.TextView;
 /**
  * Created by ankitsharma on 9/14/16.
  */
-public class ContactsListAdapter extends CursorAdapter /*implements SectionIndexer*/ {
+public class ContactsListAdapter extends CursorAdapter implements SectionIndexer {
 
     private static final String LOG_TAG = ContactsListAdapter.class.getSimpleName();
 
@@ -30,29 +30,35 @@ public class ContactsListAdapter extends CursorAdapter /*implements SectionIndex
     public ContactsListAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
 
-/*        if (!cursor.isClosed()) {
+
+
+    }
+
+    @Override
+    public Cursor swapCursor(Cursor cursor) {
+        if (!cursor.isClosed()) {
             indexer = new AlphabetIndexer(cursor,
                     cursor.getColumnIndex(ContactsFragment.CONTACT_COLUMN_NAME),
                     alphabet);
-            indexer.setCursor(cursor);
-        }*/
+        }
+        indexer.setCursor(cursor);
+        return super.swapCursor(cursor);
     }
 
-/*    @Override
+    @Override
     public int getPositionForSection(int sectionIndex) {
         return indexer.getPositionForSection(sectionIndex);
     }
 
     @Override
     public int getSectionForPosition(int position) {
-        Log.d(LOG_TAG, "position: " + position);
         return indexer.getSectionForPosition(position);
     }
 
     @Override
     public Object[] getSections() {
         return indexer.getSections();
-    }*/
+    }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {

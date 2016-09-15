@@ -108,7 +108,8 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
 
     public void showContacts() {
         contactsList = (ListView) getActivity().findViewById(R.id.list);
-
+        adapter = new ContactsListAdapter(getContext(), null, FLAGS);
+        contactsList.setAdapter(adapter);
         contactsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -145,14 +146,11 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (!data.isClosed()) {
-            adapter = new ContactsListAdapter(getContext(), data, FLAGS);
             adapter.swapCursor(data);
-            contactsList.setAdapter(adapter);
-            //contactsList.setFastScrollEnabled(true);
-            //contactsList.setScrollingCacheEnabled(true);
-            //contactsList.setFastScrollAlwaysVisible(true);
+            contactsList.setFastScrollEnabled(true);
+            contactsList.setScrollingCacheEnabled(true);
+            contactsList.setFastScrollAlwaysVisible(true);
         }
-
     }
 
     @Override
