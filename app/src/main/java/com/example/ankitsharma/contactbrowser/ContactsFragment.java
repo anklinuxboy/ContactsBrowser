@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -58,7 +59,20 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
     private final String TYPE_WORK = "3";
     private final String TYPE_WORK_MOBILE = "17";
 
+    private final String INDEX = "index";
+    private final String TOP = "TOP";
+
     public ContactsFragment() {
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedState) {
+        super.onSaveInstanceState(savedState);
+        int index = contactsList.getFirstVisiblePosition();
+        View v = contactsList.getChildAt(index);
+        int top = (v == null) ? 0 : (v.getTop() - contactsList.getPaddingTop());
+        savedState.putInt(INDEX, index);
+        savedState.putInt(TOP, top);
     }
 
     @Override
@@ -97,12 +111,12 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
         // Check for permissions for Android 6.0, if granted, then display contacts
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS)
-                                                              != PackageManager.PERMISSION_GRANTED)
+                              != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
-                                                                 PERMISSIONS_REQUEST_READ_CONTACTS);
-        else
-            showContacts();
-
+                    PERMISSIONS_REQUEST_READ_CONTACTS);
+        } else {
+                showContacts(savedInstanceState);
+        }
     }
 
     @Override
@@ -115,11 +129,15 @@ public class ContactsFragment extends Fragment implements LoaderManager.LoaderCa
      * Sets the Cursor Adapter to ListView and starts the loader manager
      * Listens for clicks and opens the dialer
      */
-    public void showContacts() {
+    public void showContacts(Bundle savedInstanceState) {
         contactsList = (ListView) getActivity().findViewById(R.id.list);
         adapter = new ContactsListAdapter(getContext(), null, FLAGS);
         contactsList.setAdapter(adapter);
-
+        if (savedInstanceState != null) {
+            int index = savedInstanceState.getInt(INDEX);
+            int top = savedInstanceState.getInt(TOP);
+            contactsList.setSelectionFromTop(index, top);
+        }
         contactsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
